@@ -72,6 +72,7 @@ export class App extends gfx.GfxApp
     update(deltaTime: number): void 
     {
         const shipSpeed = 1.0; // normalized device units / sec
+        const mineSpeed = 0.3; 
         const mineSpawnInterval = .5; // number of seconds between mine spawns
 
         if(this.ship.position.distanceTo(this.mousePosition) > 0.01)
@@ -82,6 +83,14 @@ export class App extends gfx.GfxApp
             shipDirection.rotate(this.ship.rotation);
             this.ship.position.add(shipDirection);
         }
+
+        this.mines.children.forEach((mine: gfx.Node2) => {
+
+            const mineToShip = gfx.Vector2.subtract(this.ship.position, mine.position);
+            mineToShip.normalize();
+            mineToShip.multiplyScalar(mineSpeed * deltaTime);
+            mine.position.add(mineToShip);
+        });
 
         this.timeSinceLastMineSpawn += deltaTime;
         if(this.timeSinceLastMineSpawn >= mineSpawnInterval)
@@ -113,7 +122,7 @@ export class App extends gfx.GfxApp
 
     spawnMine(): void
     {
-        const mineSpawnDistance = 0.5;
+        const mineSpawnDistance = 1.5;
         const mineSpawnLimit = 20;
         
         const mineInstance = this.mine.createInstance();
