@@ -9,11 +9,14 @@ import * as gfx from 'gophergfx'
 export class App extends gfx.GfxApp
 {
     private ship: gfx.Mesh2;
+    private mine: gfx.Mesh2;
     private star: gfx.Mesh2;
     
     private starfield: gfx.Particles2;
 
     private mousePosition: gfx.Vector2;
+
+    private timeSinceLastMineSpawn: number;
 
     // --- Create the App class ---
     constructor()
@@ -22,11 +25,14 @@ export class App extends gfx.GfxApp
         super();
 
         this.ship = gfx.Geometry2Factory.createBox();
+        this.mine = gfx.Geometry2Factory.createBox();
         this.star = gfx.Geometry2Factory.createBox();
 
         this.starfield = new gfx.Particles2(this.star, 200);
     
         this.mousePosition = new gfx.Vector2();
+
+        this.timeSinceLastMineSpawn = 0;
     }
 
 
@@ -37,6 +43,9 @@ export class App extends gfx.GfxApp
 
         this.ship.scale.set(0.08, 0.08);
         this.ship.material.texture = new gfx.Texture('./ship.png');
+
+        this.mine.scale.set(0.12, 0.12);
+        this.mine.material.texture = new gfx.Texture('./mine.png');
         
         this.star.material.texture = new gfx.Texture('./star.png');
 
@@ -58,6 +67,7 @@ export class App extends gfx.GfxApp
     update(deltaTime: number): void 
     {
         const shipSpeed = 1.0; // normalized device units / sec
+        const mineSpawnInterval = .5; // number of seconds between mine spawns
 
         if(this.ship.position.distanceTo(this.mousePosition) > 0.01)
         {
@@ -66,6 +76,13 @@ export class App extends gfx.GfxApp
             const shipDirection = new gfx.Vector2(0, shipSpeed * deltaTime);
             shipDirection.rotate(this.ship.rotation);
             this.ship.position.add(shipDirection);
+        }
+
+        this.timeSinceLastMineSpawn += deltaTime;
+        if(this.timeSinceLastMineSpawn >= mineSpawnInterval)
+        {
+            this.spawnMine();
+            this.timeSinceLastMineSpawn = 0;
         }
     }
 
@@ -87,5 +104,17 @@ export class App extends gfx.GfxApp
     onMouseMove(event: MouseEvent): void 
     {
         this.mousePosition.copy(this.getNormalizedDeviceCoordinates(event.x, event.y));
+    }
+
+    spawnMine(): void
+    {
+        const mineSpawnDistance = 0.3;
+        
+        const mineInstance = this.mine.createInstance();
+        this.scene.add(mineInstance);
+
+        const mineRotation = Math.random() * Math.PI * 2;
+        const mineDirection = gfx.Vector2.rotate(new gfx.Vector2(0, mineSpawnDistance), mineRotation);
+        mineInstance.position.add(mineDirection);
     }
 }
