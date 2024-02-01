@@ -1,7 +1,7 @@
 {
-  "name": "gophergfx-app-template",
+  "name": "lecture-6",
   "version": "1.0.0",
-  "description": "GopherGfx App Template, CSCI 4611, Spring 2024",
+  "description": "Lecture 6, CSCI 4611, Spring 2024",
   "author": "Evan Suma Rosenberg <suma@umn.edu>",
   "license": "CC BY-NC-SA 4.0",
   "type": "module",
