@@ -85,7 +85,6 @@ export class App extends gfx.GfxApp
         }
 
         this.mines.children.forEach((mine: gfx.Node2) => {
-
             const mineToShip = gfx.Vector2.subtract(this.ship.position, mine.position);
             mineToShip.normalize();
             mineToShip.multiplyScalar(mineSpeed * deltaTime);
@@ -98,6 +97,13 @@ export class App extends gfx.GfxApp
             this.spawnMine();
             this.timeSinceLastMineSpawn = 0;
         }
+
+        this.mines.children.forEach((mine: gfx.Node2) => {
+           if(this.ship.intersects(mine, gfx.IntersectionMode2.BOUNDING_CIRCLE))
+           {
+                mine.remove();
+           }
+        });
     }
 
     /**
