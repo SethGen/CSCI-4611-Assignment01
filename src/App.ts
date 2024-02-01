@@ -11,6 +11,8 @@ export class App extends gfx.GfxApp
     private ship: gfx.Mesh2;
     private mine: gfx.Mesh2;
     private star: gfx.Mesh2;
+
+    private mines: gfx.Node2;
     
     private starfield: gfx.Particles2;
 
@@ -27,6 +29,8 @@ export class App extends gfx.GfxApp
         this.ship = gfx.Geometry2Factory.createBox();
         this.mine = gfx.Geometry2Factory.createBox();
         this.star = gfx.Geometry2Factory.createBox();
+
+        this.mines = new gfx.Node2();
 
         this.starfield = new gfx.Particles2(this.star, 200);
     
@@ -59,6 +63,7 @@ export class App extends gfx.GfxApp
         this.starfield.update(true, true);
 
         this.scene.add(this.starfield);
+        this.scene.add(this.mines);
         this.scene.add(this.ship);
     }
 
@@ -108,13 +113,19 @@ export class App extends gfx.GfxApp
 
     spawnMine(): void
     {
-        const mineSpawnDistance = 0.3;
+        const mineSpawnDistance = 0.5;
+        const mineSpawnLimit = 20;
         
         const mineInstance = this.mine.createInstance();
-        this.scene.add(mineInstance);
+        this.mines.add(mineInstance);
 
         const mineRotation = Math.random() * Math.PI * 2;
         const mineDirection = gfx.Vector2.rotate(new gfx.Vector2(0, mineSpawnDistance), mineRotation);
         mineInstance.position.add(mineDirection);
+
+        if(this.mines.children.length > mineSpawnLimit)
+        {
+            this.mines.children[0].remove();
+        }
     }
 }
